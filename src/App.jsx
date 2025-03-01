@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SignUpForm from './components/ui/SignUpForm';
 
 export default function App() {
   return (
-    <div className='bg-black p-5 text-white'>
-      <h1>Helloworld</h1>
-    </div>
-  )
+    <>
+      <SignUpForm />
+    </>
+  );
 }
