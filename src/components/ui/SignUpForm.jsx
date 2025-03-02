@@ -3,6 +3,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { Button } from './button';
 import { setDoc, doc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+import { useNavigate, Link } from 'react-router-dom';
 
 function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -11,6 +13,7 @@ function SignUpForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -24,18 +27,41 @@ function SignUpForm() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      const user = auth.currentUser;
-      console.log(user);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
       if (user) {
         await setDoc(doc(db, 'users', user.uid), {
           username,
           email: user.email,
         });
       }
-      console.log('masok!');
+
+      toast.success('User registered successfully!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      navigate('/dashboard'); // dashboard?? homepage??
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -104,9 +130,25 @@ function SignUpForm() {
             required
           />
         </div>
-        <Button type="submit" loading={loading} className="w-full">
+        <Button
+          type="submit"
+          loading={loading}
+          className="w-full justify-center"
+        >
           Register
         </Button>
+
+        <div className="text-center mt-4">
+          <span className="text-sm">
+            Already have an account?{' '}
+            <Link
+              to="/"
+              className="text-blue-500 hover:underline focus:outline-none"
+            >
+              Sign In
+            </Link>
+          </span>
+        </div>
       </form>
     </div>
   );
